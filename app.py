@@ -1,6 +1,6 @@
-from flask import Flask, request, jsonify, abort
+from flask import Flask, current_app, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
-# empezando api
+from os import environ
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@localhost/database_name'
 db = SQLAlchemy(app)
