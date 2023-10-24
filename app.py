@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
-
+# Desarrolando
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@localhost/database_name'
 db = SQLAlchemy(app)
@@ -42,7 +42,7 @@ def get_directories():
     }
     return jsonify(response)
 
-# Ruta para crear un objeto
+# Ruta para crear un objeto de tipo post
 @app.route("/directories/", methods=["POST"])
 def create_object():
     # Obtener los datos del request
