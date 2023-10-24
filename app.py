@@ -81,9 +81,6 @@ def validate_object(obj):
             return False
     return True
 
-if __name__ == '__main__':
-    app.run(host=0.0.0.0, port=4000)
-
 # Ruta para actualizar parcialmente un objeto por id
 @app.route("/directories/<int:id>/", methods=["PATCH"])
 def patch_object_by_id(id):
