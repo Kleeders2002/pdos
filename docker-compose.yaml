@@ -25,6 +25,7 @@ services:
       DB_URL: postgresql://postgres:postgres@flask_db:5432/postgres
     depends_on:
       flask_db: 
+            restart: true
     
 volumes:
   pgdata: {}
