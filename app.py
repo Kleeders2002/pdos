@@ -58,16 +58,6 @@ def create_object():
     # Devolver el objeto creado con código 201 (Created)
     return jsonify(directory_to_dict(directory)), 201
 
-# Ruta para obtener un objeto por id tipo get
-@app.route("/directories/<int:id>/", methods=["GET"])
-def get_object_by_id(id):
-    # Obtener el objeto por id utilizando la base de datos
-    directory = Directory.query.get(id)
-    # Si no existe, devolver código 404 (Not found)
-    if not directory:
-        abort(404)
-    # Si existe, devolver el objeto con código 200 (OK)
-    return jsonify(directory_to_dict(directory))
 
 # Función auxiliar para convertir un objeto Directory en un diccionario
 def directory_to_dict(directory):
@@ -118,6 +108,18 @@ def patch_object_by_id(id):
     db.session.commit()
     # Devolver el objeto actualizado con código 200 (OK)
     return jsonify(directory_to_dict(directory))
+
+# Ruta para obtener un objeto por id tipo get
+@app.route("/directories/<int:id>/", methods=["GET"])
+def get_object_by_id(id):
+    # Obtener el objeto por id utilizando la base de datos
+    directory = Directory.query.get(id)
+    # Si no existe, devolver código 404 (Not found)
+    if not directory:
+        abort(404)
+    # Si existe, devolver el objeto con código 200 (OK)
+    return jsonify(directory_to_dict(directory))
+
 
 # Ruta para eliminar un objeto por id
 @app.route("/directories/<int:id>/", methods=["DELETE"])
