@@ -14,12 +14,13 @@ class Directory(db.Model):
     def json(self):
         return {'id': self.id,'name': self.name, 'emails': self.emails}
 
-db.create_all()
+with app.app_context():
+    db.create_all()
 
 # Ruta para obtener el estado del servicio
-@app.route("/status/", methods=["GET"])
+@app.route('/status/', methods=['GET'])
 def status():
-    return jsonify("pong")
+    return make_response(jsonify({'message:':'pong'}),200)
 
 # Ruta para obtener el listado de objetos
 @app.route("/directories/", methods=["GET"])
