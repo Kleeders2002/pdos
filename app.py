@@ -1,105 +1,127 @@
-from flask import Flask, current_app, request, jsonify, make_response
-from flask_sqlalchemy import SQLAlchemy
-from os import environ
-
+from flask import Flask, request, jsonify, abort
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DB_URL')
-db = SQLAlchemy(app)
 
-class Usuarios(db.Model):
-    __nombreTabla__ = 'usuarios'
 
-    id = db.Column(db.Integer,primary_key=True) 
-    nombre_usuario = db.Column(db.String(30),unique=True, nullable=False)
-    correos_usuario = db.Column(db.ARRAY(db.String(50)),unique=True, nullable=False) 
+directories = []
+def get_object(id):
+    for obj in directories:
+        if obj["id"] == id:
+            return obj
+    return None
 
-    def serialize(self):
-         return {
-            'id': self.id,
-            'nombre_usuario': self.nombre_usuario,
-            'correos_usuario': self.correos_usuario
-        }
-with app.app_context():
-    db.create_all()
+def validate_object(obj):
+    if not isinstance(obj, dict):
+        return False
+    if not "name" in obj or not isinstance(obj["name"], str):
+        return False
+    if not "emails" in obj or not isinstance(obj["emails"], list):
+        return False
+    for email in obj["emails"]:
+        if not isinstance(email, str):
+            return False
+    return True
 
-@app.route('/status/', methods=['GET'])
-def get_status():
-    return make_response(jsonify({'message:':'pong'}),200)
+@app.route("/status/", methods=["GET"])
+def status():
+    return jsonify("pong")
 
-@app.route('/directories', methods = ['POST']) 
-def CrearUsuario():
-   try:
-       data= request.get_json()
-       usuario= Usuarios(nombre_usuario=data['nombre_usuario'],correos_usuario= data['correos_usuario'] )
-       db.session.add(usuario)
-       db.session.commit()
-       return make_response(jsonify({'mensaje':'usuario creado'}),201)
-   except Exception:
-       return make_response(jsonify({'mensaje':'error creando el usuario'}),500)
+@app.route("/directories/", methods=["GET"])
+def get_directories():
 
-@app.route('/directories', methods = ['GET'])
-def ObtenerUsuarios():
-   try:
-       usuarios= Usuarios.query.all()
-       if len(usuarios):
-           return make_response(jsonify({
-               'cantidad':len(usuarios),
-               'proximo':"link a siguiente página",
-               'anterior':"link a página previa",
-               'usuarios':[usuario.serialize() for usuario in usuarios]
-            }),200)
-       return make_response(jsonify({'mensaje':'usuarios no encontrados'}),404)     
-   except Exception:
-       return make_response(jsonify({'mensaje':'error obteniendo a los usuarios'}),500)
+    page = int(request.args.get("page", 1))
+    page_size = int(request.args.get("page_size", 10))
+ 
+    start = (page - 1) * page_size
+    end = start + page_size
+ 
+    results = directories[start:end]
 
-@app.route('/directories/<int:id>', methods = ['GET'])
-def ObtenerUsuario(id):
-   try:
-       usuario= Usuarios.query.get(id)
-       return make_response(jsonify({'usuario':usuario.serialize()}),200)     
-   except Exception:
-       return make_response(jsonify({'mensaje':'error obteniendo al usuario'}),500)
+    response = {
+        "count": len(directories),
+        "next": f"/directories/?page={page + 1}&page_size={page_size}" if end < len(directories) else None,
+        "previous": f"/directories/?page={page - 1}&page_size={page_size}" if start > 0 else None,
+        "results": results
+    }
+    return jsonify(response)
+
+
+@app.route("/directories/", methods=["POST"])
+def create_object():
    
-
-@app.route('/directories/<int:id>', methods = ['PUT'])
-def ActualizarUsuario(id):
-   try:
-       usuario= Usuarios.query.get(id)
-       if usuario:
-        data= request.get_json()
-        usuario.nombre_usuario = data['nombre_usuario']
-        usuario.correos_usuario = data['correos_usuario']
-        db.session.commit()
-        return make_response(jsonify({'mensaje':'usuario actualizado'}),200)
-       return make_response(jsonify({'mensaje':'usuario no encontrado'}),404)
-
-   except Exception:
-       return make_response(jsonify({'mensaje':'error actualizando el usuario'}),500)
+    data = request.get_json()
+  
+    if not validate_object(data):
+        abort(400) # Bad request
+ 
+    data["id"] = len(directories) + 1
    
-@app.route('/directories/<int:id>', methods = ['PATCH'])
-def ActualizarParcialUsuario(id):
-   try:
-       usuario= Usuarios.query.get(id)
-       if usuario:
-        data= request.get_json()
-        if 'nombre_usuario' in data:
-            usuario.nombre_usuario = data['nombre_usuario']
-        if 'correos_usuario' in data:
-            usuario.correos_usuario = data['correos_usuario']
-        db.session.commit()
-        return make_response(jsonify({'mensaje':'usuario actualizado'}),200)
-       return make_response(jsonify({'mensaje':'usuario no encontrado'}),404)
-   except Exception:
-       return make_response(jsonify({'mensaje':'error actualizando el usuario'}),500)
+    directories.append(data)
+   
+    return jsonify(data), 201
 
-@app.route('/directories/<int:id>', methods = ['DELETE'])
-def EliminarUsuario(id):
-   try:
-       usuario= Usuarios.query.get(id)
-       if usuario:
-        db.session.delete(usuario)
-        db.session.commit()
-        return make_response(jsonify({'mensaje':'usuario eliminado'}),200)
-       return make_response(jsonify({'mensaje':'usuario no encontrado'}),404)
-   except Exception:
-       return make_response(jsonify({'mensaje':'error eliminando el usuario'}),500)
+
+@app.route("/directories/<int:id>/", methods=["GET"])
+def get_object_by_id(id):
+
+    obj = get_object(id)
+
+    if not obj:
+        abort(404)
+ 
+    return jsonify(obj)
+
+
+@app.route("/directories/<int:id>/", methods=["PUT"])
+def update_object_by_id(id):
+
+    obj = get_object(id)
+
+    if not obj:
+        abort(404)
+
+    data = request.get_json()
+
+    if not validate_object(data):
+        abort(400) # Bad request
+
+    obj["name"] = data["name"]
+    obj["emails"] = data["emails"]
+  
+    return jsonify(obj)
+
+
+@app.route("/directories/<int:id>/", methods=["PATCH"])
+def patch_object_by_id(id):
+  
+    obj = get_object(id)
+    
+    if not obj:
+        abort(404)
+    
+    data = request.get_json()
+   
+    if not isinstance(data, dict):
+        abort(400) # Bad request
+
+    if "name" in data and isinstance(data["name"], str):
+        obj["name"] = data["name"]
+    if "emails" in data and isinstance(data["emails"], list):
+        for email in data["emails"]:
+            if not isinstance(email, str):
+                abort(400) # Bad request
+        obj["emails"] = data["emails"]
+    
+    return jsonify(obj)
+
+# Ruta para eliminar un objeto por id
+@app.route("/directories/<int:id>/", methods=["DELETE"])
+def delete_object_by_id(id):
+  
+    obj = get_object(id)
+ 
+    if not obj:
+        abort(404)
+  
+    directories.remove(obj)
+ 
+    return "", 204
