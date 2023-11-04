@@ -3,8 +3,6 @@ FROM python:3.12-slim as build
 WORKDIR /app
 
 COPY requirements.txt ./
-ENV HTTP_PROXY "http://proxylab.ucab.edu.ve:3128"
-ENV HTTPS_PROXY "http://proxylab.ucab.edu.ve:3128"
 RUN pip install -r requirements.txt
 
 COPY . .
