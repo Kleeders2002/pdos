@@ -15,7 +15,7 @@ services:
     volumes:
       - type: bind
        source: "/data/gv0/vols/pdos"
-       source: "/var/lib/postgresql/data"
+       target: "/var/lib/postgresql/data"
     healthcheck:
       test: ["CMD", "pg_isready"]
       start_period: 10s
