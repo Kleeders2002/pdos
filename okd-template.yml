@@ -202,8 +202,7 @@ objects:
             - image: 'dipache/pdos'
               imagePullPolicy: Always
               name: appserver
-              args:
-                - appserver
+             
               env:
                 - name: DB_URL
                   valueFrom:
