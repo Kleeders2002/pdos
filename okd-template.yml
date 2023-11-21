@@ -16,11 +16,11 @@ parameters:
   
   - name: DB_NAME
     description: Nombre de la base de datos.
-    value: cnp2simple
+    value: postgres
 
   - name: DB_USR
     description: Nombre de usario para conexión a la base de datos.
-    value: cnp2simple
+    value: postgres
 
   - name: DB_PWD
     description: Password de usuario para conexión a la base de datos.
