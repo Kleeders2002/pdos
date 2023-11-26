@@ -1,0 +1,4 @@
+APP_NAME="pdos2"
+DB_PWD="postgres"
+DOMAIN_NAME="pdosdiegokleeders.okd-dev.ucab.edu.ve"
+PROJECT_NAME="pj-djpacheco-19"
