@@ -1,4 +1,5 @@
-APP_NAME="pdos"
+APP_NAME="pdos2"
+DB_USR="postgres"
 DB_PWD="postgres"
-DOMAIN_NAME="pdosdiegokleeders.okd-dev.ucab.edu.ve"
+DOMAIN_NAME="diegokleeders.okd-dev.ucab.edu.ve"
 PROJECT_NAME="pj-djpacheco-19"
