@@ -57,8 +57,8 @@ objects:
     spec:
       ports:
         - name: appserver
-          port: 8000
-          targetPort: 8000
+          port: 4000
+          targetPort: 4000
       selector:
         name: "${APP_NAME}-appserver"
     
@@ -211,7 +211,7 @@ objects:
                       key: DB_URL
            
               ports:
-                - containerPort: 8000
+                - containerPort: 4000
                   protocol: TCP
               resources:
                 limits:
