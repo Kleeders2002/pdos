@@ -25,7 +25,7 @@ services:
     image: dipache/pdos
     restart: always
     ports:
-      - "8000:8000"
+      - "4000:4000"
     environment:
       DB_URL: postgresql://postgres:postgres@flask_db:5432/postgres
     depends_on:
