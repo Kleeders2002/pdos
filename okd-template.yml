@@ -1,5 +1,5 @@
 kind: Template
-apiVersion: v1
+apiVersion: v4
 metadata:
   name: pdos-template
   annotations:
