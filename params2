@@ -1,5 +1,5 @@
 APP_NAME="pdos2"
-DB_USR="postgres"
-DB_PWD="postgres"
+DB_USR="postgres2"
+DB_PWD="postgres2"
 DOMAIN_NAME="diegokleeders.okd-dev.ucab.edu.ve"
 PROJECT_NAME="pj-djpacheco-19"
